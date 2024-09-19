@@ -20,6 +20,7 @@ function loadItems(){
     .then(data=>{
         if(!data.length){
             sentinel.innerHTML="No more posts";
+            return;
         }
         for(let i =0;i<data.length;i++){
             // let template_clone = document.importNode(template.content,true);
