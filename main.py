@@ -1,16 +1,60 @@
-# This is a sample Python script.
+from itertools import count
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from flask import Flask, render_template, request, jsonify, make_response
+import random
+import time
+
+app = Flask(__name__)
+heading = "Lorem ipsum dolor sit amet."
+
+content = """
+Lorem ipsum dolor sit amet consectetur,adipisicing elit.
+Repellat inventore assumenda laboriosam,
+obcaecati saepe pariatur atque est? Quam.molestias nisi.
+"""
+
+db = list()
+
+posts = 200
+
+quantity = 10
+
+for x in range(posts):
+    heading_parts = heading.split(" ")
+    random.shuffle(heading_parts)
+
+    content_parts = content.split(" ")
+    random.shuffle(content_parts)
+
+    db.append([x, " ".join(heading_parts), " ".join(content_parts)])
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+@app.route("/load")
+def load():
+    time.sleep(0.2)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    if request.args:
+        counter = int(request.args.get("c"))
+
+        if counter == 0:
+            print(f"Returning posts 0 to {quantity}")
+
+            res = make_response(jsonify(db[0:quantity]), 200) #列表切片，包头不含尾
+
+        elif counter == posts:
+            print("No more posts")
+            res = make_response(jsonify({}),200)
+
+        else:
+            print(f"Returning posts {counter} to {counter + quantity}")
+
+            res = make_response(jsonify(db[counter:counter+quantity]),200)
+    return res
+
+
+app.run(debug='True')
